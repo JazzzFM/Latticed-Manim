@@ -1,4 +1,4 @@
-![logo](logo/cropped.png)
+![logo](logo/LATTICED.png)
 
 [![Build Status](https://travis-ci.org/3b1b/manim.svg?branch=master)](https://travis-ci.org/3b1b/manim)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
