@@ -22,7 +22,6 @@ class ImageTest(Scene):
         image1 = ImageMobject("CIBERSEG")
         image2 = ImageMobject("T_ciberseguridad")
         image3 = ImageMobject("cicipn")
-
         
         image1.move_to(LEFT*3 + UP*2)
         self.play(GrowFromCenter(image1, color = BLUE))

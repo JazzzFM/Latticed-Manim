@@ -79,7 +79,7 @@ Herramienta para hacer visualizaciones y animaciones con retículas en 2D, 3D y 
             dim2 = int(input('¿Cuál es la dimensión de la retícula?: '))
 
             if dim2 == 1 :
-                command_line = 'python3.7 -m manim Laticed.py SpanLattice1d -pl'
+                command_line = 'python3.7 -m manim Laticed.py DrawLattice1Din3D -pl'
                 args = shlex.split(command_line)
                 subprocess.call(args)
 
@@ -91,12 +91,12 @@ Herramienta para hacer visualizaciones y animaciones con retículas en 2D, 3D y 
                     [b] Diujar la reítcula y su Dominio Fundamental.
                     '''))
                 if do2 == 'a':
-                    command_line = 'python3.7 -m manim Laticed.py DrawLattice1Din3D -pl'
+                    command_line = 'python3.7 -m manim Laticed.py DrawLattice2Din3D -pl'
                     args = shlex.split(command_line)
                     subprocess.call(args)
 
                 if do2 == 'b':
-                    command_line = 'python3.7 -m manim Laticed.py  DrawLattice2D -pl'
+                    command_line = 'python3.7 -m manim Laticed.py DrawLatticeDomFund2Din3D -pl'
                     args = shlex.split(command_line)
                     subprocess.call(args)
 
@@ -117,12 +117,12 @@ Herramienta para hacer visualizaciones y animaciones con retículas en 2D, 3D y 
                     subprocess.call(args)
 
                 if do3 == 'b':
-                    command_line = 'python3.7 -m manim Laticed.py  DrawLattice2D -pl'
+                    command_line = 'python3.7 -m manim Laticed.py DrawDomFund3D -pl'
                     args = shlex.split(command_line)
                     subprocess.call(args)
 
                 if do3 == 'c':
-                    command_line = 'python3.7 -m manim Laticed.py  DrawDomFundLattice -pl'
+                    command_line = 'python3.7 -m manim Laticed.py LLLReduceLattice -pl'
                     args = shlex.split(command_line)
                     subprocess.call(args)
 
@@ -136,6 +136,9 @@ Herramienta para hacer visualizaciones y animaciones con retículas en 2D, 3D y 
 
         if command == 'C':
             print("Se va a dibujar la represenación de una retícula de cuatro dimensiones.")
+            command_line = 'python3.7 -m manim Laticed.py LLLReduceLattice -pl'                 
+            args = shlex.split(command_line)
+            subprocess.call(args)
 
 
 
