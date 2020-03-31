@@ -45,7 +45,7 @@ Herramienta para hacer visualizaciones y animaciones con retículas en 2D, 3D y 
                     ¿Qué deseas hacer? 
                     [a] Animar la retícula por el conjunto generador.
                     [b] Dibujar la retícula directamente. 
-                    [c] Diujar la reítcula y su Dominio Fundamental.
+                    [c] Dibujar la reítcula y su Dominio Fundamental.
                     [d] Reducir la retícula por algoritmo de Gauss.
                     '''))
                 if do1 == 'a':
