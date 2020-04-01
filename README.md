@@ -8,7 +8,7 @@
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as seen in the videos at [3Blue1Brown](https://www.3blue1brown.com/).
 
 ## Run Latticed: Choose your option
-python3.7 lattice.py
+python3.7 Main.py
 
 ## Installation
 Manim runs on Python 3.7. You can install it from PyPI via pip:
