@@ -38,7 +38,7 @@ rowframe2 = 0
 ##################
 
 #can = Canvas(root, width = sizex, height = sizey)
-image = ImageTk.PhotoImage(Image.open("ein.jpg"))
+image = ImageTk.PhotoImage(Image.open("logo/ein.jpeg"))
 #
 #can.create_image(0, 0, anchor = NW, image = image)
 #can.pack()
