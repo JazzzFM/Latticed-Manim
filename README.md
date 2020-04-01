@@ -1,4 +1,4 @@
-![logo](logo/LATTICED.png)
+![logo](logo/ein.jpeg)
 
 [![Build Status](https://travis-ci.org/3b1b/manim.svg?branch=master)](https://travis-ci.org/3b1b/manim)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
@@ -8,7 +8,7 @@
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as seen in the videos at [3Blue1Brown](https://www.3blue1brown.com/).
 
 ## Run Latticed: Choose your option
-python3.7 Main.py 
+python3.7 lattice.py
 
 ## Installation
 Manim runs on Python 3.7. You can install it from PyPI via pip:
