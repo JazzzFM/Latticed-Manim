@@ -3,6 +3,10 @@ import math
 import pygame
 import random 
 import MatrixQ
+import Vector4D as v4
+import Vector5D as v5
+import tarugo4D as t4
+import tarugo5D as t5
 import os
 #import latticeVid as L  #AQUI ESTOY LLAMANDO A MANIM
 import tarugo3D as t
@@ -22,7 +26,7 @@ import shlex, subprocess
 
 root = Tk()
 sizex = 800
-sizey = 800
+sizey = 600
 posx  = 100
 posy  = 100
 root.wm_geometry("%dx%d+%d+%d" % (sizex, sizey, posx, posy))
@@ -37,11 +41,11 @@ rowframe2 = 0
 #                #
 ##################
 
-#can = Canvas(root, width = sizex, height = sizey)
-image = ImageTk.PhotoImage(Image.open("logo/ein.jpeg"))
+can = Canvas(root, width = sizex, height = sizey)
+image = ImageTk.PhotoImage(Image.open("Lat.jpeg"))
 #
-#can.create_image(0, 0, anchor = NW, image = image)
-#can.pack()
+can.create_image(0, 0, anchor = NW, image = image)
+can.pack()
 
 ###########
 #         #
@@ -86,19 +90,19 @@ def myfunction2(event):
 #canvas.create_window((0,0),window=frame,anchor='nw')
 #frame.bind("<Configure>",myfunction)
 ##############################################################
-myframe2=Frame(root, relief=GROOVE, width=50, height=100, bd=20)
-myframe2.place(relx = 0.5, rely = 0.5, anchor = CENTER)
-
-canvas2=Canvas(myframe2)
-frame2=Frame(canvas2)
-myscrollbar2=Scrollbar(myframe2, orient="horizontal",command=canvas2.xview)
-
-canvas2.configure(xscrollcommand=myscrollbar2.set)
-canvas2.create_image(0, 0, anchor = NW, image = image)
-myscrollbar2.pack(side="bottom",fill="x")
-canvas2.pack(side="left")
-canvas2.create_window((0,0),window=frame2,anchor='nw')
-frame2.bind("<Configure>",myfunction2)
+#myframe2=Frame(root, relief=GROOVE, width=50, height=100, bd=20)
+#myframe2.place(relx = 0.5, rely = 0.5, anchor = CENTER)
+#
+#canvas2=Canvas(myframe2)
+#frame2=Frame(canvas2)
+#myscrollbar2=Scrollbar(myframe2, orient="horizontal",command=canvas2.xview)
+#
+#canvas2.configure(xscrollcommand=myscrollbar2.set)
+#canvas2.create_image(0, 0, anchor = NW, image = image)
+#myscrollbar2.pack(side="bottom",fill="x")
+#canvas2.pack(side="left")
+#canvas2.create_window((0,0),window=frame2,anchor='nw')
+#frame2.bind("<Configure>",myfunction2)
 #data2()
 #data()
 ###########
@@ -106,29 +110,28 @@ frame2.bind("<Configure>",myfunction2)
 # LABELS  #
 #         #
 ###########
-lb3 = Label(frame2, text = "Enter the lattice base:")
-lb4 = Label(frame2, text = "How many constraints?")
-func = Label(frame2, text = "vector1:")
-func1 = Label(frame2, text = "vector2:")
-func2 = Label(frame2, text = "vector3:")
+lb = Label(root, text = "Or try building with Manim:")
+lb3 = Label(root, text = "Enter the base vectors for 3D lattice:")
+func = Label(root, text = "vector1:")
+func1 = Label(root, text = "vector2:")
+func2 = Label(root, text = "vector3:")
 
-lb3.grid(row = rowframe2 + 1, column = 0, columnspan = 10)
-#lb4.grid(row = rowframe2 + 2, column = 0)
+lb31 = Label(root, text = "Enter the base vectors for 4D lattice:")
+func01 = Label(root, text = "vector1:")
+func11 = Label(root, text = "vector2:")
+func21 = Label(root, text = "vector3:")
+func31 = Label(root, text = "vector4:")
 
-###########
-#         #
-# Inputs  #
-#         #
-###########
+lb32 = Label(root, text = "Enter the base vectors for 5D lattice:")
+func011 = Label(root, text = "vector1:")
+func111 = Label(root, text = "vector2:")
+func211 = Label(root, text = "vector3:")
+func311 = Label(root, text = "vector4:")
+func411 = Label(root, text = "vector5:")
 
-e0 = Entry(root, width = "10", borderwidth = 5)
-e1 = Entry(root, width = "10", borderwidth = 5)
-e2 = Entry(root, width = "10", borderwidth = 5)
-e3 = Entry(root, width = "10", borderwidth = 5)
-VAR = Entry(frame2, width = "10", borderwidth = 5)
-CONS = Entry(frame2, width = "10", borderwidth = 5)
-#VAR.grid(row = rowframe2 + 1, column = 10)
-#CONS.grid(row = rowframe2 + 2, column = 1)
+lb3.place(relx = 0.2, rely = 0.04, anchor = CENTER)
+lb31.place(relx = 0.2, rely = 0.25, anchor = CENTER)
+lb32.place(relx = 0.2, rely = 0.55, anchor = CENTER)
 
 ###########
 #         #
@@ -141,17 +144,66 @@ def inputZ():
     global Z
     global Z1
     global Z2
+
+    global dim4_0
+    global dim4_1
+    global dim4_2
+    global dim4_3
+
+    global dim5_0
+    global dim5_1
+    global dim5_2
+    global dim5_3
+    global dim5_4
+
     numVar = 3
-    Z = [Entry(frame2, width = 5, borderwidth = 5) for x in range(numVar)]
-    Z1 = [Entry(frame2, width = 5, borderwidth = 5) for x in range(numVar)]
-    Z2 = [Entry(frame2, width = 5, borderwidth = 5) for x in range(numVar)]
-    func.grid(row = rowframe2 + 7, column = 9)
-    func1.grid(row = rowframe2 + 8, column = 9)
-    func2.grid(row = rowframe2 + 9, column = 9)
+    Z = [Entry(root, width = 5, borderwidth = 5) for x in range(numVar)]
+    Z1 = [Entry(root, width = 5, borderwidth = 5) for x in range(numVar)]
+    Z2 = [Entry(root, width = 5, borderwidth = 5) for x in range(numVar)]
+
+    dim4_0 = [Entry(root, width = 5, borderwidth = 5) for x in range(4)]
+    dim4_1 = [Entry(root, width = 5, borderwidth = 5) for x in range(4)]
+    dim4_2 = [Entry(root, width = 5, borderwidth = 5) for x in range(4)]
+    dim4_3 = [Entry(root, width = 5, borderwidth = 5) for x in range(4)]
+
+    dim5_0 = [Entry(root, width = 5, borderwidth = 5) for x in range(5)]
+    dim5_1 = [Entry(root, width = 5, borderwidth = 5) for x in range(5)]
+    dim5_2 = [Entry(root, width = 5, borderwidth = 5) for x in range(5)]
+    dim5_3 = [Entry(root, width = 5, borderwidth = 5) for x in range(5)]
+    dim5_4 = [Entry(root, width = 5, borderwidth = 5) for x in range(5)]
+
+    func.place(relx = 0.2, rely = 0.08, anchor = CENTER)
+    func1.place(relx = 0.2, rely = 0.125, anchor = CENTER)
+    func2.place(relx = 0.2, rely = 0.1725, anchor = CENTER)
     for i in range(0, numVar):
-        Z[i].grid(row = rowframe2 + 7, column = i + 10)
-        Z1[i].grid(row = rowframe2 + 8, column = i + 10)
-        Z2[i].grid(row = rowframe2 + 9, column = i + 10)
+        Z[i].place(relx = 0.07*i + 0.3, rely = 0.08, anchor = CENTER)
+        Z1[i].place(relx = 0.07*i + 0.3, rely = 0.125, anchor = CENTER)
+        Z2[i].place(relx = 0.07*i + 0.3, rely = 0.1725, anchor = CENTER)
+
+    func01.place(relx = 0.2, rely = 0.3, anchor = CENTER)
+    func11.place(relx = 0.2, rely = 0.345, anchor = CENTER)
+    func21.place(relx = 0.2, rely = 0.39, anchor = CENTER)
+    func31.place(relx = 0.2, rely = 0.435, anchor = CENTER)
+    for i in range(0, 4):
+        dim4_0[i].place(relx = 0.07*i + 0.3, rely = 0.3, anchor = CENTER)
+        dim4_1[i].place(relx = 0.07*i + 0.3, rely = 0.345, anchor = CENTER)
+        dim4_2[i].place(relx = 0.07*i + 0.3, rely = 0.39, anchor = CENTER)
+        dim4_3[i].place(relx = 0.07*i + 0.3, rely = 0.435, anchor = CENTER)
+
+    func011.place(relx = 0.2, rely = 0.6, anchor = CENTER)
+    func111.place(relx = 0.2, rely = 0.6 + 1*0.045, anchor = CENTER)
+    func211.place(relx = 0.2, rely = 0.6 + 2*0.045, anchor = CENTER)
+    func311.place(relx = 0.2, rely = 0.6 + 3*0.045, anchor = CENTER)
+    func411.place(relx = 0.2, rely = 0.6 + 4*0.045, anchor = CENTER)
+
+    for i in range(0, 5):
+        dim5_0[i].place(relx = 0.07*i + 0.3, rely = 0.6, anchor = CENTER)
+        dim5_1[i].place(relx = 0.07*i + 0.3, rely = 0.6 + 1*0.045, anchor = CENTER)
+        dim5_2[i].place(relx = 0.07*i + 0.3, rely = 0.6 + 2*0.045, anchor = CENTER)
+        dim5_3[i].place(relx = 0.07*i + 0.3, rely = 0.6 + 3*0.045, anchor = CENTER)
+        dim5_4[i].place(relx = 0.07*i + 0.3, rely = 0.6 + 4*0.045, anchor = CENTER)
+
+
 inputZ()
 #############
 #           #
@@ -298,12 +350,19 @@ def axes():
     glVertex3f(0, 0, 0)
     glVertex3f(10, 0, 0)
     glEnd()
+global vertical
+vertical = Scale(root, from_= 0, to = 3.1415)
+vertical.pack()
 
-def draw():
+def draw3D():
     global theta
+
     global base0
     global base1
     global base2
+    global base3
+
+    center = v.Vector3D(0, 0, 0)
     
     Qx = string_split(Z[0].get())
     Qy = string_split(Z[1].get())
@@ -317,9 +376,10 @@ def draw():
     Qy2 = string_split(Z2[1].get())
     Qz2 = string_split(Z2[2].get())
 
-    base2 = v.Vector3D(Qx2.num/Qx2.den, Qy2.num/Qy2.den, Qz2.num/Qz2.den)
-    base1 = v.Vector3D(Qx1.num/Qx1.den, Qy1.num/Qy1.den, Qz1.num/Qz1.den)
     base0 = v.Vector3D(Qx.num/Qx.den, Qy.num/Qy.den, Qz.num/Qz.den)
+    base1 = v.Vector3D(Qx1.num/Qx1.den, Qy1.num/Qy1.den, Qz1.num/Qz1.den)
+    base2 = v.Vector3D(Qx2.num/Qx2.den, Qy2.num/Qy2.den, Qz2.num/Qz2.den)
+
     theta = 0.0
     pygame.init()
     display = (800,600)
@@ -336,7 +396,6 @@ def draw():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 #quit()
-        
         
         glEnable(GL_DEPTH_TEST)
         glDepthMask(GL_TRUE)
@@ -374,12 +433,241 @@ def draw():
                         tarugo = t.tarugo3D(((center + base0.scale(i)) + base1.scale(j)) + base2.scale(k), base0, base1, base2, False)
                         tarugo.drawTarugo()
 
+        
         pygame.display.flip()
         pygame.time.wait(10)
         theta += 0.01
 
-button_Draw = Button(frame2, text="Graph", command = draw)
-button_Draw.grid(row = rowframe2 + 10, column = 0)
+button_Draw3D = Button(root, text="Graph 3D Lattice", command = draw3D)
+button_Draw3D.place(relx = 0.07*5 + 0.3, rely = 0.1725, anchor = CENTER)
+
+
+def draw4D():
+    global theta
+
+    global base4D_1
+    global base4D_2
+    global base4D_3
+    global base4D_4
+
+    Qx = string_split(dim4_0[0].get())
+    Qy = string_split(dim4_0[1].get())
+    Qz = string_split(dim4_0[2].get())
+    Qw = string_split(dim4_0[3].get())
+
+    Qx1 = string_split(dim4_1[0].get())
+    Qy1 = string_split(dim4_1[1].get())
+    Qz1 = string_split(dim4_1[2].get())
+    Qw1 = string_split(dim4_1[3].get())
+
+    Qx2 = string_split(dim4_2[0].get())
+    Qy2 = string_split(dim4_2[1].get())
+    Qz2 = string_split(dim4_2[2].get())
+    Qw2 = string_split(dim4_2[3].get())
+
+    Qx3 = string_split(dim4_3[0].get())
+    Qy3 = string_split(dim4_3[1].get())
+    Qz3 = string_split(dim4_3[2].get())
+    Qw3 = string_split(dim4_3[3].get())
+
+    base4D_1 = v4.Vector4D(Qx.num/Qx.den, Qy.num/Qy.den, Qz.num/Qz.den, Qw.num/Qw.den)
+    base4D_2 = v4.Vector4D(Qx1.num/Qx1.den, Qy1.num/Qy1.den, Qz1.num/Qz1.den, Qw1.num/Qw1.den)
+    base4D_3 = v4.Vector4D(Qx2.num/Qx2.den, Qy2.num/Qy2.den, Qz2.num/Qz2.den, Qw2.num/Qw2.den)
+    base4D_4 = v4.Vector4D(Qx3.num/Qx3.den, Qy3.num/Qy3.den, Qz3.num/Qz3.den, Qw3.num/Qw3.den)
+
+
+    center = v4.Vector4D(0, 0, 0, 0)
+    base0 = v4.Vector4D(3, 0, 0, 0)
+    base1 = v4.Vector4D(0, 3, 0, 0)
+    base2 = v4.Vector4D(0, 0, 3, 0)
+    base3 = v4.Vector4D(0, 0, 0, 3)
+
+    theta = 0.0
+    theta1 = 0.0
+    pygame.init()
+    display = (800,600)
+
+    pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(45, (display[0]/display[1]), 0.001, 50.0)
+    
+    glTranslatef(0.0,0.0, -5)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                #quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    theta += 0.1
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                theta += 0.1
+
+        
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(GL_TRUE)
+        glDepthFunc(GL_LEQUAL)
+        glDepthRange(0.0, 1.0)
+        glEnable(GL_DEPTH_CLAMP)
+
+        glEnable(GL_LIGHT0)
+        fv4 = [0.3, 0.3, 0.3, 1.0]
+        
+        glShadeModel(GL_SMOOTH)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, fv4)
+        glLightfv(GL_LIGHT0,GL_POSITION, fv4)
+        glLightfv(GL_LIGHT0,GL_DIFFUSE, fv4)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_MULTISAMPLE)  
+        
+        glRotatef(0, 30, 30, 30)
+        glClearColor (0.5, 0.5, 0.5, 0.5)
+        glClearDepth(1.0)
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        r = 25
+        gluLookAt(r*math.sin(0.25*PI)*math.cos(theta1), r*math.sin(0.25*PI)*math.sin(theta1), r*math.cos(0.25*PI), LookAt.x, LookAt.y, LookAt.z, Sky.x, Sky.y, Sky.z)
+        
+        axes()
+
+        for i in range(-2, 2):
+            for j in range(-2, 2):
+                for k in range(-2, 2):
+                    if (i+j+k)%3 == 1:
+                        tar4 = t4.tarugo4D(((center + base4D_1.scale(i)) + base4D_2.scale(j)) + base4D_3.scale(k), base4D_1, base4D_2, base4D_3, base4D_4, True)
+                        tar4.drawTarugo(theta, 10)
+
+        pygame.display.flip()
+        pygame.time.wait(10)
+        #theta += 0.01
+        theta1 += 0.01
+
+button_Draw = Button(root, text="Graph 4D Lattice", command = draw4D)
+button_Draw.place(relx = 0.07*5 + 0.3, rely = 0.435, anchor = CENTER)
+
+
+def draw5D():
+    global theta
+
+    global base5D_1
+    global base5D_2
+    global base5D_3
+    global base5D_4
+    global base5D_4
+
+    Qx = string_split(dim5_0[0].get())
+    Qy = string_split(dim5_0[1].get())
+    Qz = string_split(dim5_0[2].get())
+    Qw = string_split(dim5_0[3].get())
+    Qt = string_split(dim5_0[4].get())
+
+    Qx1 = string_split(dim5_1[0].get())
+    Qy1 = string_split(dim5_1[1].get())
+    Qz1 = string_split(dim5_1[2].get())
+    Qw1 = string_split(dim5_1[3].get())
+    Qt1 = string_split(dim5_1[4].get())
+
+    Qx2 = string_split(dim5_2[0].get())
+    Qy2 = string_split(dim5_2[1].get())
+    Qz2 = string_split(dim5_2[2].get())
+    Qw2 = string_split(dim5_2[3].get())
+    Qt2 = string_split(dim5_2[4].get())
+
+    Qx3 = string_split(dim5_3[0].get())
+    Qy3 = string_split(dim5_3[1].get())
+    Qz3 = string_split(dim5_3[2].get())
+    Qw3 = string_split(dim5_3[3].get())
+    Qt3 = string_split(dim5_3[4].get())
+
+    Qx4 = string_split(dim5_4[0].get())
+    Qy4 = string_split(dim5_4[1].get())
+    Qz4 = string_split(dim5_4[2].get())
+    Qw4 = string_split(dim5_4[3].get())
+    Qt4 = string_split(dim5_4[4].get())
+
+    base5D_1 = v5.Vector5D(Qx.num/Qx.den, Qy.num/Qy.den, Qz.num/Qz.den, Qw.num/Qw.den, Qt.num/Qt.den)
+    base5D_2 = v5.Vector5D(Qx1.num/Qx1.den, Qy1.num/Qy1.den, Qz1.num/Qz1.den, Qw1.num/Qw1.den, Qt1.num/Qt1.den)
+    base5D_3 = v5.Vector5D(Qx2.num/Qx2.den, Qy2.num/Qy2.den, Qz2.num/Qz2.den, Qw2.num/Qw2.den, Qt2.num/Qt2.den)
+    base5D_4 = v5.Vector5D(Qx3.num/Qx3.den, Qy3.num/Qy3.den, Qz3.num/Qz3.den, Qw3.num/Qw3.den, Qt3.num/Qt3.den)
+    base5D_5 = v5.Vector5D(Qx4.num/Qx4.den, Qy4.num/Qy4.den, Qz4.num/Qz4.den, Qw4.num/Qw4.den, Qt4.num/Qt4.den)
+
+    center = v5.Vector5D(0, 0, 0, 0, 0)
+    base0 = v5.Vector5D(3, 0, 0, 0, 0)
+    base1 = v5.Vector5D(0, 3, 0, 0, 0)
+    base2 = v5.Vector5D(0, 0, 3, 0, 0)
+    base3 = v5.Vector5D(0, 0, 0, 3, 0)
+    base4 = v5.Vector5D(0, 0, 0, 0, 3)
+
+    theta = 0.0
+    theta1 = 0.0
+    pygame.init()
+    display = (800,600)
+
+    pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(45, (display[0]/display[1]), 0.001, 50.0)
+    
+    glTranslatef(0.0,0.0, -5)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                #quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    theta += 0.1
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                theta += 0.1
+
+        
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(GL_TRUE)
+        glDepthFunc(GL_LEQUAL)
+        glDepthRange(0.0, 1.0)
+        glEnable(GL_DEPTH_CLAMP)
+
+        glEnable(GL_LIGHT0)
+        fv4 = [0.3, 0.3, 0.3, 1.0]
+        
+        glShadeModel(GL_SMOOTH)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, fv4)
+        glLightfv(GL_LIGHT0,GL_POSITION, fv4)
+        glLightfv(GL_LIGHT0,GL_DIFFUSE, fv4)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_MULTISAMPLE)  
+        
+        glRotatef(0, 30, 30, 30)
+        glClearColor (0.5, 0.5, 0.5, 0.5)
+        glClearDepth(1.0)
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        r = 25
+        gluLookAt(r*math.sin(0.25*PI)*math.cos(theta1), r*math.sin(0.25*PI)*math.sin(theta1), r*math.cos(0.25*PI), LookAt.x, LookAt.y, LookAt.z, Sky.x, Sky.y, Sky.z)
+        
+        axes()
+
+        for i in range(-2, 2):
+            for j in range(-2, 2):
+                for k in range(-2, 2):
+                    if (i+j+k)%2 == 0:
+                        tar5 = t5.tarugo5D(((center + base5D_1.scale(i)) + base5D_2.scale(j)) + base5D_3.scale(k), base5D_1, base5D_2, base5D_3, base5D_4, base5D_5, False)
+                        tar6 = t5.tarugo5D(((center + base5D_1.scale(i)) + base5D_2.scale(j)) + base5D_3.scale(k), base5D_1, base5D_2, base5D_3, base5D_4, base5D_5, True)
+                        tar5.drawTarugo(theta1*3, 10)
+                        tar6.drawTarugo(theta1*3, 10)
+
+        pygame.display.flip()
+        pygame.time.wait(10)
+        #theta += 0.01
+        theta1 += 0.01
+
+button_Draw5 = Button(root, text="Graph 5D Lattice", command = draw5D)
+button_Draw5.place(relx = 0.07*6 + 0.3, rely = 0.6, anchor = CENTER)
 
 
 ########################
@@ -391,10 +679,10 @@ button_Draw.grid(row = rowframe2 + 10, column = 0)
 ########################
 
 def terminalAccess():
-    os.system( 'python3.7 Main.py' )#'python -m manim latticeVid.py -pl')
-
-button_Draw = Button(frame2, text="MANIM", command = terminalAccess)
-button_Draw.grid(row = rowframe2 + 11, column = 0)
+    os.system( 'python Main.py' )#'python -m manim latticeVid.py -pl')
+lb.place(relx = 0.5, rely = 0.04, anchor = CENTER)
+button_Draw = Button(root, text="MANIM", command = terminalAccess)
+button_Draw.place(relx = 0.65, rely = 0.04, anchor = CENTER)
 
 ###################
 #                 #
@@ -403,7 +691,7 @@ button_Draw.grid(row = rowframe2 + 11, column = 0)
 ################### 
 
 button_quit = Button(root, text = "Exit", command = root.quit)
-button_quit.place(relx = 0.5, rely =0.8, anchor = CENTER)
+button_quit.place(relx = 0.5, rely =0.9, anchor = CENTER)
 
 
 root.mainloop()

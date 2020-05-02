@@ -1,0 +1,5 @@
+file '/home/jaziel/Escritorio/Latticed-Manim/media/videos/Presentacion/720p30/partial_movie_files/DrawLattice2D/00000.mp4'
+file '/home/jaziel/Escritorio/Latticed-Manim/media/videos/Presentacion/720p30/partial_movie_files/DrawLattice2D/00001.mp4'
+file '/home/jaziel/Escritorio/Latticed-Manim/media/videos/Presentacion/720p30/partial_movie_files/DrawLattice2D/00002.mp4'
+file '/home/jaziel/Escritorio/Latticed-Manim/media/videos/Presentacion/720p30/partial_movie_files/DrawLattice2D/00003.mp4'
+file '/home/jaziel/Escritorio/Latticed-Manim/media/videos/Presentacion/720p30/partial_movie_files/DrawLattice2D/00004.mp4'

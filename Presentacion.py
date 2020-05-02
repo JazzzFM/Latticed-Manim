@@ -79,6 +79,7 @@ class ScreenGrid(VGroup):
                     labels.add(label)
 
         self.add(grid, axes, labels)
+
 def InputVectors():
     m = []
     a_1 = float(input("Ingrese los escalares del vector, entrada ["+str(1)+"] : "))
@@ -89,19 +90,43 @@ def InputVectors():
     print("\n")
     return np.array(m)
 
-class DefLattice(Scene):
+def Polygon3D(listOfPoints, aes_color = BLUE, opacity = 0.2):
+    H1 =   listOfPoints
+    H2 =   []
+    for i in range(len(H1)):
+        H2.append([H1[i][0],H1[i][1],H1[i][2]])
+
+    S=[]
+    for i in range(len(H2)-1):
+        s1= [(H2[i][0],H2[i][1],H2[i][2]),
+            (H2[i+1][0],H2[i+1][1],H2[i+1][2]),
+            (H2[i+1][0],H2[i+1][1],H1[i+1][2]),
+            (H2[i][0],H2[i][1],H1[i][2])]
+        S.append(Polygon(*s1,fill_color=aes_color, fill_opacity=opacity, color=aes_color,stoke_width=0.1))
+
+    b = Polygon(*H1,fill_color=aes_color, fill_opacity=opacity, color=aes_color,stoke_width=0.1)
+    h = Polygon(*H2,fill_color=aes_color, fill_opacity=opacity, color=aes_color,stoke_width=0.1)
+    s = VGroup(*S)
+    poly3D = VGroup(*[b,h,s])
+    return poly3D
+
+
+class DrawLattice2D(Scene):
     def construct(self):
 
         screen_grid = ScreenGrid()
         self.add(screen_grid)
-        
+
         v_1 = InputVectors()
         v_2 = InputVectors()
+        print('Ingrese un vector que no esté en la retícula: ')
+        w = InputVectors()
 
         center = np.array([0, 0, 0])
         self.play(FadeIn(Vector(v_1, color = BLUE)))
         self.play(FadeIn(Vector(v_2, color = GREEN)))
-          
+        self.play(FadeIn(Vector(w, color = ORANGE)))
+        self.add(screen_grid, Dot(w, color = ORANGE))
 
         for i in range(-10, 10):
             for j in range(-10, 10):
@@ -113,6 +138,47 @@ class DefLattice(Scene):
                 self.add(screen_grid, Dot(suma1))
                 self.add(screen_grid, Dot(center2))
                 self.add(screen_grid, Dot(suma2))
+
+        center2 = np.array([3.5, -1.0, 0.0]) 
+        u_1 = center2 + v_1
+        u_2 = center2 + v_2
+        u_3 = center2 + v_1 + v_2
+        
+        epsilon = np.array([0.0,-0.3,0.0])
+
+        VectorRef = TextMobject("$\mathbf{v}$")
+        VectorRef.move_to(center2 + epsilon)
+        self.add(screen_grid, VectorRef)
+
+        NonRet = TextMobject("$\mathbf{w}$")
+        NonRet.move_to(w + epsilon)
+        self.add(screen_grid, NonRet)
+
+        Reticula = TextMobject("$\Lambda$")
+        Reticula.move_to(UP + 2*LEFT)
+        self.add(screen_grid, Reticula)
+        
+        DomSum = TextMobject("$F + \mathbf{v}$")
+        DomSum.move_to(np.array([4.4, 0.35, 0.0]))
+        self.add(screen_grid, DomSum)
+        
+        Cita1 = TextMobject("El vertice de $F + \mathbf{v}$ que esta mas cerca de $\mathbf{w}$")
+        Cita2 = TextMobject(" es un candidato para el vector mas cercano (aproximadamente)")
+        Cita1.move_to(2.5*DOWN)
+        Cita2.move_to(3.5*DOWN)
+        
+        self.add(screen_grid, Cita1)
+        self.add(screen_grid, Cita2)
+
+
+
+        DomFund =   [center2,
+                    u_1,
+                    u_3,
+                    u_2
+                    ]
+        DrawDomFund = Polygon3D(DomFund)
+        self.play(ShowCreation(DrawDomFund))
 
         self.wait(5)
 
