@@ -1,0 +1,515 @@
+\documentclass{llncs}
+
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\usepackage{lipsum} % just for the example
+\usepackage{subfig}
+\usepackage{multirow}
+\newtheorem{teor}{Teorema}
+\addto{\captionsenglish}{\renewcommand{\keywordname}{Keywords}}
+\addto{\captionsspanish}{\renewcommand{\keywordname}{Palabras claves}}
+\AtBeginDocument{%
+	\patchcmd{\keywords}{\keywordname}{\textbf{\keywordname:}}{}{}%
+}
+
+\begin{document}
+\renewcommand{\listtablename}{Índice de tablas}
+\renewcommand{\tablename}{Tabla} 
+
+\title{Herramienta de \textit{software} para la visualizaci\'on de la criptografía basada en ret\'iculas}
+
+\author{Jaziel D. Flores Rodr\'iguez \and
+Miguel E. P\'erez Ibarra\inst{1} \and
+Fernando Q. Valencia Rodr\'iguez\inst{2} \and
+Alfonso F. De Abiega L'Eglisse\inst{3} \and
+Gina Gallegos-Garc\'ia\inst{4}}
+
+\institute{Instituto Polit\'ecnico Nacional. ESFM, IPN Edificio 9, Unidad Profesional Adolfo L\'opez Mateos, Zacatenco, Gustavo A. Madero, C.P. 07738, CDMX \and
+	Instituto Polit\'ecnico Nacional. ESCOM, Juan de Dios B\'atiz s/n esq. Miguel Oth\'on de Mendizabal. Lindavista. Gustavo A. Madero. C.P. 07738. CDMX \and
+	Instituto Polit\'ecnico Nacional. ESIME Unidad Culhuacan, Santa Ana 1000, San Francisco Culhuacan, Coyoac\'an, 04430, CDMX \and
+	Instituto Polit\'ecnico Nacional. CIC, Juan de Dios B\'atiz S/N, Nueva Industrial Vallejo, Gustavo A. Madero, 07738, CDMX}
+
+\maketitle
+
+\begin{abstract}
+En la actualidad la criptograf\'ia post-cu\'antica puede ser estudiada a trav\'es de una categorizaci\'on que marca la diferencia entre la criptograf\'ia basada en isogeneas de curvas el\'ipticas, ecuaciones de m\'ultiples variables y ret\'iculas, por mencionar algunas. Desde el punto de vista de la geometr\'ia de n\'umeros, las ret\'iculas llamadas  \textit{Lattices} por su nombre en ingl\'es, son estructuras geom\'etricas que tambi\'en pueden verse como el conjunto de todas las combinaciones enteras de las denominadas $\mathbb{Z}$-bases que son conjuntos de vectores linealmente independientes. Con base en ello, en este trabajo se presenta el diseño de una herramienta de \textit{software}, que emplea un motor de animaci\'on matem\'atico llamado \textit{Manim} y \textit{PyOpenGL}, la plataforma interoperable de Python que permite unir OpenGL con otras interfaces de programación de aplicaciones. Su uso permitir\'a visualizar, de manera gr\'afica, las retículas además de mostrar su contenido sustancial.   
+
+\keywords{Algoritmos de reducci\'on de ret\'iculas, criptograf\'ia, desarrollo de software.}
+\end{abstract}
+
+\section{Introducci\'on}
+En 1994 Peter Shor desarroll\'o un algoritmo cu\'antico para resolver el problema de la factorizaci\'on de un número y el problema del logaritmo discreto, el cual se conoci\'o como algoritmo de Shor \cite{b0}. Este desarrollo se condsider\'o de gran importancia dado que las construcciones criptogr\'aficas de llave p\'ublica, entre las que destacan, el esquema de RSA y ElGamal, utilizadas hasta la fecha, ser\'ian vulneradas llegada la existencia de una computadora cu\'antica.
+
+Lo anterior, ha generado que durante los \'ultimos años, exista una oleada de investigaci\'on cient\'ifica enfocada en el diseño y la construcci\'on de esquemas criptogr\'aficos capaces de resistir ataques efectuados, tanto por computadoras cl\'asicas, como por computadoras cu\'anticas. Dichos esquemas reciben el nombre de esquemas post-cu\'anticos.
+
+Dependiendo de la funcionalidad y del problema en el que basan su seguridad, los esquemas post-cu\'anticos se clasifican en 5 tipos: isogeneas de curvas el\'ipticas, 
+polinomios cuadr\'aticos multivariables, c\'odigos, hashes y esquemas basados en ret\'iculas. Espec\'ificamente hablando de los esquemas que basan su funcionalidad en ret\'iculas, el algoritmo m\'as conocido es el esquema de cifrado de \textit{NTRU}, siendo este uno de los mas seguros y efectivos tanto en computo cu\'antico como en cl\'asico \cite{b1}.
+
+Los ataques que se condieran m\'as efectivos hacia el esquema de \textit{NTRU}, hacen uso de \textit{algoritmos de reducción}, que se enfocan en encontrar vectores muy cortos dentro de un ret\'icula. Un algoritmo de este tipo, es el llamado \textit{LLL} el cual se ejecuta en tiempo polin\'omico \cite{b2}. Años despu\'es, vinieron mejoras de algoritmos de reduci\'on, entre las que destaca el algoritmo \textit{BKZ} \cite{b3}, que hasta la fecha se considera como el mejor algoritmo de reducci\'on que puede ser puesto en la pr\'actica.
+
+Con base en lo anterior, en este trabajo se presenta el diseño de una herramienta de \textit{software} para la visualización de la funcionalidad que poseen criptografía basada en retículas, muestra la funcionalidad de las construcciones criptogr\'aficas, antes mencionadas. El resto del documento, se organiza de la siguiente forma: en la Secci\'on \ref{Estado} se pueden apreciar los trabajos relacionados con la investigaci\'on realizada en este documento. La Secci\'on \ref{Marco} dicta la teor\'ia matem\'atica detr\'as de los problemas existentes en las ret\'iculas, mostrando sus definiciones y teoremas. La Secci\'on \ref{Diseño} muestra el diseño de la herramienta capaz de animar ret\'iculas de dos, tres, cuatro y cinco dimensiones. La Secci\'on \ref{Pruebasyresultados} muestra las pruebas que fueron realizadas a la herramienta de \textit{software}, también presenta los resultados obtenidos. La Secci\'on \ref{Discusión} presenta la discusión de dichos resultados. Por \'ultimo, la Secci\'on \ref{Conclusiones} señala las conclusiones y el trabajo a futuro que se desprende de esta herramienta de \textit{software} para visualización de la criptografía basada en retículas.
+
+\section{Estado del Arte}
+\label{Estado}
+A la fecha, se han constru\'ido herramientas de \textit{software} que tienen la tarea de mostrar la funcionalidad de las diferentes contrucciones criptogr\'aficas.\\ %Algunos ejemplos son Microsoft \cite{b4}, Maplesoft \cite{b5} y Wolfram Research \cite{b6}.
+Espec\'ificamente hablando de herramientas que implementen algoritmos de reducci\'on como el \textit{Algoritmo LLL} existen: \textit{Cryptography Tools} \cite{b4}, \textit{Maple} \cite{b5}, que tiene la funci\'on \textit{IntegerRelations[LLL]}. \textit{Mathematica} \cite{b6}, que implementa la funci\'on \textit{LatticeReduce}. PARI/GP \cite{b7}, con la funci\'on \textit{qflll}. \textit{Magma} \cite{b8}, que implementa las funciones \textit{LLL} y \textit{LLLGram}, haciendo uso de una matriz de Gram. Y \textit{CrypTool 2} \cite{b9}, con \textit{Lattice-based cryptography}. Sin embargo, la mayor\'ia de estas herramientas muestran sus resultados sin visualizar su funcionalidad paso a paso. Es decir, al ingresar vectores como una entrada requerida, estas herramientas solamente dan una salida mostrada con los vectores reducidos y como coordenadas con n\'umeros. Esto, sin mostrar el detalle que indique c\'omo se llegó a ellos, lo cual genera desconocimiento en gran medida del flujo de los datos del algoritmo y como consecuencia, en su significado geom\'etrico \cite{b10}. Adicionalmente a ello, \textit{CrypTool 2} \cite{b9} permite trabajar unicamente con dimensi\'on dos. 
+
+\section{Marco Te\'orico}
+\label{Marco}
+En esta secci\'on se presentan las definiciones, que se consideran m\'as importantes para el diseño de la herramienta de \textit{software} para visualización.
+
+	\subsection*{Definici\'on 1.} Sea $\mathbf{V}$ un $\mathbb{R}$-espacio vectorial de dimensi\'on $n$, $\beta = \{ \mathbf{v}_1,..., \mathbf{v}_m \}$ un conjunto linealmente independiente. Una ret\'icula en $\mathbf{V}$ generada por $\beta$, se define como el conjunto de todas las combinaciones lineales con elementos de $\beta$ y escalares en $\mathbb{Z}$, denotada por $\Lambda_\beta$ de la siguiente forma:
+	
+	\[ \Lambda_{\beta} = \left\{ \sum _{{i=1}}^{{m}}{\alpha_{i}}{\mathbf  {v}}_{i} | {\alpha}_{i} \in \mathbb{Z},{\mathbf  {v}}_{i}\in \beta  \quad \forall i \in \{1,..., m\} \right\} \]
+
+	Se dice que $\beta$ forma una $\mathbb{Z}$-base para la ret\'icula. En general, diferentes bases de $\mathbf{V}$ generar\'an diferentes ret\'iculas. Aunque, si se considera la matriz de transici\'on entre bases $\left[ T \right]_{\beta \beta'}$ esta pertenece al grupo lineal general de $\mathbb{Z}$, es decir, $\mathit{GL}_{m}(\mathbb{Z})$. De esta forma, las ret\'iculas generadas por estas bases, ser\'an isomorfas dado que $\left[ T \right]_{\beta \beta'}$ induce un isomorfismo entre las dos ret\'iculas \cite{b11}.
+
+	\subsection*{Definici\'on 2.} Sea $\beta$ una base de $\mathbf{V}$ un $\mathbb{R}$-espacio vectorial de dimensi\'on finita y $\Lambda_\beta$ una ret\'icula en $\mathbf{V}$. Un dominio fundamental para $\Lambda_\beta$ se define como \cite{b11}: 
+
+		\[\mathcal{F}(\Lambda_{\beta}) = \left\{ \sum _{{i=1}}^{{n}}{\alpha_{i}}{\mathbf  {v}}_{i}\quad | \quad 0 \leq \alpha_{i} < 1 \right\} \]
+
+	\subsection{Problemas fundamentales y dif\'iciles de las ret\'iculas}
+	Desde un punto de vista criptogr\'afico, la conjeturada intratabilidad de tres problemas fundamentales y dif\'iciles dentro de las ret\'iculas, son la base de la seguridad de los criptosistemas que operan en este tipo de estructuras. De ah\'i, que para aplicaciones, las ret\'iculas se toman en espacios vectoriales, a menudo $ \mathbb {Q}^{n}$, o m\'odulos libres, por lo regular $\mathbb{Z}^{n}$. Para ello, se debe considerar un espacio normado (\textbf{V}, $|| \quad||$) de dimensi\'on $n$, y $\Lambda$ como una ret\'icula en \textbf{V}, lo que permite definir lo siguiente: El problema del vector m\'as corto ($SVP$, por sus siglas en ingl\'es) tiene como finalidad encontrar el vecor no nulo m\'as corto en $\Lambda$.  El problema del vetor m\'as cercano ($CVP$ por sus siglas en ingl\'es), para el cu\'al dado un vector $\mathbf{t} \in$\textbf{V}, tal que no esté en $\Lambda$, su objetivo es encontrar un vector en $\Lambda$ más cercano a $\mathbf{t}$. Por último, el problema de aproximaci\'on al vector m\'as cercano ($apprCVP$ por sus siglas en ingl\'es), para este, dado $\mathbf{t}\in$\textbf{V}, se debe encontrar un vector $\mathbf{v} \in \Lambda$ tal que $||\mathbf{v}-\mathbf{t}||$ es pequeño. Es decir, $||\mathbf{v}-\mathbf{t}||\leq k \displaystyle\min_{\mathbf{w} \in L}||\mathbf{w}-\mathbf{t}|| $ para una constante $k$ pequeña.
+
+	Para estos problemas, la \textit{reducci\'on de una ret\'icula} es el nombre dado al problema pr\'actico de resolver los problemas $SVP$ y $CVP$. Es decir, encontrar vectores razonablemente cortos y bases \textit{buenas} o m\'as convenientes \cite{b12}.
+
+	\subsection{Bases Razonablemente \textit{Buenas}}
+	La idea de la reducción de la base recae en cambiar una base $\beta$ de una retícula $\Lambda$ en otra base más corta $\beta'$ de tal manera que permanezca inalterada. Para hacer esto, se pueden usar las siguientes operaciones: Intercambio de dos vectores de la base. Reemplazo de $v_{j}$ por ${-v}_{j}$ para sumar o restar a un vector $v_{j}$, una combinación lineal y discreta de los otros vectores de la base. Todas estas operaciones, sin que $\Lambda$ se vea afectada \cite{b13}.
+
+	\subsection{Condiciones de tamaño y pseudo-ortogonalidad} 
+	Suponiendo un conjunto linealmente independiente de vectores $\{v_1,...,v_n\}$ y despu\'es del proceso de ortogonalizaci\'on de Gram-Schmidth se obtiene un conjunto $\{v*_1,...,v*_n\}$. Si algún coeficiente en dicho proceso satisface:
+
+		\centerline{$\frac{v_i \cdot v*_j }{||v*_j ||^2} > \frac{1}{2}$}
+
+	Al reemplazar $v_i$ por $v_i-av_j$ con un $a$ apropiado en $\mathbb{Z}$, se hace el coeficiente m\'as pequeño. De ah\'i que se dice que una base satisface la \textit{condici\'on de tamaño} si: 
+
+		\centerline{$\frac{|v_i \cdot v*_j|}{||v*_j||^2} \leq \frac{1}{2} \quad \forall  i<j$}
+	Para equilibrar esto, se requiere que los vectores base sean lo m\'as ortogonales entre s\'i, por lo que debe imponer la \textit{condici\'on de pseudo-ortogonalidad}, donde:
+
+		\centerline{$|| v*_{i+1}|| \geq \frac{\sqrt{3}}{2}||v*_i||$}
+
+	De ah\'i que se tiene el Teorema de Hermite, deifnido en el Teorema 1. La demostraci\'on de dicho Teorema, puede consultarse en \cite{b14}.
+
+	\begin{teor}[Hermite.] En cada ret\'icula existe una base que satisface tanto la condici\'on de tamaño como la condici\'on de pseudo-ortogonalidad.
+	\end{teor}
+
+	Desafortunadamente, los algoritmos m\'as conocidos para encontrar \textit{bases} son exponenciales en la dimensi\'on. Por lo tanto, se debe cambiar la \textit{condici\'on de pseudo-ortogonalidad} a una menos escritcta, llamada la \textit{condici\'on de Lov\'asz}:
+
+		\centerline{$|| v*_{i+1} || \geq \sqrt{\frac{3}{4} - \frac{| v_{i+1} \cdot v*_i} {||v_i||^2||}} ||v*_i||$ }
+
+	La cu\'al indica que la proyecci\'on de $v_{i+1}$ dentro del complemento ortogonal del subespacio generado por los vectores $v_1,...,v_{i-1}$ es mayor o igual a tres cuartos de la proyecci\'on de $v_i$ dentro del complemento ortogonal del subespacio generado por los vectores $v_1,...,v_{i-1}$, lo que resulta ser generalizaci\'on de la \textit{condici\'on de pseudo-ortogonalidad}, resultando en el Teorema 2. Su demostraci\'on puede verse en \cite{b14}.
+
+	\begin{teor}[Lenstra, Lenstra, Lov\'asz.] Existe un algoritmo de tiempo polin\'omico que encuentra una base para que $\Lambda$ satisfaga tanto la condici\'on de tamaño como la condici\'on de Lov\'asz. Dichas bases se denominan bases reducidas de LLL.
+	\end{teor}
+
+\begin{figure}
+	\centering
+%	\includegraphics[width=10cm]{Pictures/pic_new4.jpeg}
+%	\includegraphics[width=\textwidth]{Pictures/pic_new4.jpeg}
+	\includegraphics[scale = 0.35]{Pictures/pic_new4.jpeg}
+	\caption{Diagrama de metodolog\'ia en utilizada para el diseño de la herrammienta para visualización}
+	\label{Metodologia}
+\end{figure}
+
+\section{Diseño de la herramienta}
+\label{Diseño}
+El desarrollo de la herramienta de \textit{software} para la visualizaci\'on de la criptograf\'ia basada en ret\'iculas considera el marco te\'orico de la Secci\'on anterior dentro de la metodolog\'ia de desarrollo de \textit{software} en espiral, la cual permite tener una mejor fluidez, comunicaci\'on y divisi\'on de trabajos \cite{b15}. De igual forma, permite empezar por funcionalidades b\'asicas o generales, permitiendo mejorar y escalar el desarrollo de la herramienta. Dicha metodología se ilustra con la Figura \ref{Metodologia}.\\ %FALTA LA EXPLICACION DE LA FIGURA
+A través de su uso, esta herramienta para visualizaci\'on, además de implementar el algoritmo \textit{LLL}, genera la gr\'afica de la ret\'icula dada su base en un espacio euclideano, de tal forma que se tiene una herramienta para visualiza ret\'iculas en los espacios euclideanos de dimesiones dos, tres, cuatro y cinco (2D, 3D, 4D y 5D).\\
+
+\begin{figure}[hbt]
+	\centering
+%	\includegraphics[width=\textwidth]{Pictures/pic_new3.jpeg}
+	\includegraphics[scale = 0.4]{Pictures/pic_new3.jpeg}
+	\caption{Diagrama de bloques de la herramienta para visualizaci\'on}
+	\label{bloques}
+\end{figure}
+
+\subsection{Bloques y módulos de la herramienta para visualización}
+Como se puede ver en la Figura \ref{bloques}, la herramienta se compone de dos bloques unidos por una interfaz gráfica (GUI), la cual permite escoger entre dos opciones, la primera opción para dimensión dos y tres (2D/3D), la segunda para dimensión cuatro y cinco (4D/5D). Ambos bloques utilizan funciones y estructuras de la librería \textit{Manim} \cite{b16} para graficar ret\'iculas degeneradas como no degeneradas, pero se diferencían por los módulos que utilizan para generar las animaciones. Para el caso de las retículas degeneradas, \textit{Manim} da la posibilidad de graficar un dominio fundamental de cada una y en el caso de las ret\'iculas no degeneradas, permite aplicar el algoritmo de reducci\'on LLL en dimensi\'on dos y tres (2D/3D). % Para ello se usaron una serie de m\'odulos propios de Manim y librer\'ias externas tales como las que aparecen a continuaci\'on.
+\\
+Las animaciones generadas para 2D/3D consideran tres módulos, el módulo de \textit{Animación} que contiene a los submódulos \textit{Fade} y \textit{Transform}; el módulo de \textit{Cámara}, que contiene al submódulo \textit{Escena}; y por último el módulo de \textit{Objetos nativos de Python}\\
+El módulo de \textit{Animaci\'on} se encarga de generar las transiciones \textit{frame} a \textit{frame} para la generaci\'on de la ecuaci\'on de la ret\'icula. Los submódulos generan una animaci\'on suave, realizan algunos efectos sobre la animaci\'on y transforman los vectores visibles para la c\'amara. El módulo de \textit{C\'amara} se encarga de captar la proyecci\'on de la escena que se encuentra en un espacio en 3D, realiza el corte del marco y genera una proyecci\'on en 2D para la generación de un video. Por último, el módulo de \textit{Objetos nativos de Python} manipula los datos y realiza c\'alculos sobre los mismos.\\
+Por otro lado, las animaciones generadas para 4D/5D se generan a través de la interacción de los módulos \textit{Racionales, Vectores, Matrices} y \textit{Tarugos}. Este bloque genera una animación o \textit{render} que el usuario puede visualizar en tiempo real. Maneja datos de dimensiones superiores, por lo que se hace necesario contar con estructuras especializadas, de ahí que el módulo \textit{Racionales} hace cálculos precisos, \textit{Vectores} almacena la información en una estructura conocida, así como en los módulos de \textit{Matrices} y \textit{Tarugos}, estos últimos usando el metodo de triangulizaci\'on. De hecho, los \textit{tarugos} de dimensiones cuatro y cinco aparecen cortados. Es decir, este módulo se diseño para que solo se dibuje una celda por \textit{tarugo}, de tal forma que solo se genera el \textit{render} de una cara del cubo. Esto, con el fin de ahorra poder de computo. De ahí, que una ret\'icula de dimensi\'on cuatro se visualiza por celdas espec\'ificas de teseractos (cubos de dimensi\'on cuatro) deformados por tranformaciones lineales determinadas por la $\mathbb{Z}$-base de la ret\'icula. Lo mismo ocurre para la dimensi\'on cinco, ya que la ret\'icula se visualiza por cortes a los penteractos (cubos de dimensi\'on cinco) y el sobrante de los cortes resultan ser teseractos deformados por transformaciones lineales determinadas por la $\mathbb{Z}$-base de la retícula. Lo anterior, haciendo operaciones y transformaciones a través de Python 3.7 y la biblioteca llamada PyOpenGL. 
+
+\begin{figure}
+	\centering
+%	\includegraphics[width=\textwidth]{Pictures/pic_new1.jpeg}
+	\includegraphics[scale = 0.38]{Pictures/pic_new1.jpeg}
+	\caption{Diagrama de procesos principales de la herramienta \textit{latticed}.}
+	\label{Actividades}
+\end{figure}
+\newpage
+\subsection{Flujo de actividades de la herramienta para visualización}
+El flujo de acciones de la herramienta considera la interacci\'on entre los bloques y módulos con el usuario a través de una interfaz (GUI), lo cual se ilustra con la Figura \ref{Actividades}. El flujo tiene inicio para seleccionar una opci\'on, ya sea dimensi\'on 2D/3D o 4D/5D. Para la opción 2D/3D se tiene el despliegue de un video con el c\'alculo y la respectiva animaci\'on. En caso de que el usuario seleccione la dimensi\'on 4D/5D, la herramienta despliega como resultado un \textit{render} que permitir\'a visualizar la gr\'afica generada.\\
+% No sé donde ubicar esto: ****
+%Ya que se busca que el usuario tenga un interacci\'on visual de como funciona el algoritmo LLL, es necesario saber como es que se visualiza el resultado arrojado por el LLL y se mezcla junto con la gr\'afica de la ret\'icula. El algoritmo de reducci\'on LLL con el que se va a trabajar es capaz de resolver el problema del vector m\'as corto en dimesiones superiores casi arbitrarias.%****
+Para ambas opciones, el usuario deberá introducir los datos de las ret\'iculas que se van a generar y calcular. Una vez que la herramienta cuente con estos datos, se organizan en estructuras especiales para poder operar sobre ellos. Cuando se realizan las operaciones, se entra a un bucle en el cual se generar\'an los \textit{frames} para el \textit{render}. Este bucle producir\'a los \textit{frames} necesarios. Cabe destacar que durante este proceso se siguen realizando c\'alculos sobre los datos. Al final, se genera el respectivo resultado, el cual se muestra en pantalla para el usuario. %Lo anterior, se ilustra con la Figura \ref{Flujo} Esto, se ilustra con  %Como se puede apreciar en la Figura 3, se muestra la interacci\'on entre el usuario y la herramienta y como es que fluye entre las etapas y los m\'odulos que lo conforman.
+
+\begin{figure}
+	\centering
+%	\includegraphics[width=\textwidth]{Pictures/pic_new2.jpeg}
+	\includegraphics[scale = 0.4]{Pictures/pic_new2.jpeg}
+	\caption{Diagrama de secuencia de la herramienta \textit{latticed}.}
+	\label{Secuencia}
+\end{figure}
+\newpage
+\subsection{Secuencia de datos en la herramienta para visualización}
+La secuencia que sigue la herramienta para visualización tiene inicio cuando el usuario introduce datos para indicar cómo espera que se visualice el resultado. Estos, hacen referencia a la c\'amara y el tamaño, por mencionar algunos. Después, se ingresan los datos que permitirán generar las ret\'iculas, mismos sobre los que se hacen los c\'alculos. Estos datos se procesan para determinar la precisi\'on y posteriormente ubicarlos en las estructuras adecuadas al tipo de dato que se introdujo de manera previa. Una vez que se tienen los datos estructurados, \textit{Manim} y \textit{Latticed} los operan de tal forma que se generan los \textit{frames} que conforman el \textit{render} final. Por \'ultimo, PyOpenGL genera la visualizaci\'on para el despliegue del resultado. Esto se ilustra con la Figura \ref{Secuencia}. 
+%-----------------------------------------------------------------------------------
+%--------------------------- Aqui comienza antiguo capítulo 4 ----------------------
+%-----------------------------------------------------------------------------------
+
+%\begin{itemize}
+%	\item La primera parte (en la dimensión dos y tres) sobre el motor de animaci\'on denominado \textbf{manim} el cual est\'a compuesto por:	OUT
+
+%	Donde el texto impreso en pantalla est\'a escrito en LaTex, Cairo es una librer\'ia que ayuda con algunos elementos gr\'aficos ya constru\'idos y FFmpeg renderiza el resultado final como imagen o video, finalmente todas estas instrucciones se escriben en el lenguaje de programaci\'on python3.7. En el siguiente diagrama se explica las opciones. Se crearon dos programas fundamentales en esta primera parte, el principal puede graficar tanto ret\'iculas degeneradas como no degeneradas, llendo con espacios de dimensi\'on dos, tres y cuatro como opciones. OUT/IN
+
+%\end{itemize}
+
+%Esto se debe a que en PyOpenGL s\'olo es necesario definir una sola funci\'on, sea $f$ tal funci\'on, la cual gr\'afica en cuanto es llamada, dicha funci\'on se define para que este en espera de datos proporcionados por el usaurio. Una vez que tiene los datos manda a llamar a las funciones encargadas de dibujar a los tarugos que funcionan usando el metodo de triangulizaci\'on y as\'i mismo se dibuja la ret\'icula. OUT/IN
+%Ahora, $f$ se conecta a la GUI mediante un bot\'on que en cuanto es presionado manda a llamar a $f$ y esta realiza la gr\'afica. Por tanto para poder llamar a $f$ adecuadamente s\'olo es necesario que el usaurio ingrese los datos de las bases y presione el boton conectado a $f$.
+
+%Ya se mencion\'o que la ret\'icula es dibujada mediante tarugos, sin embargo, cabe mencionar que en el la renderizaci\'on dada por PyOpenGL y 
+
+%-----------------------------------------------------------------------------------
+%--------------------------- Aqui termina antiguo capítulo 4 ----------------------
+%-----------------------------------------------------------------------------------
+\section{Pruebas y Resultados}
+\label{Pruebasyresultados}
+%PONER LAS TABLAS NUEVAS EN EL LUGAR DONDE DEBEN IR Y BORRAR LO QUE YA NO DEBE IR.
+%BINARIZAR LAS GRAFICAS = NO SE PUEDE
+% DISCUTIR CON FER, QUÉ SE HARÁ CON LAS FIGURAS 9 Y 11 VAN PARA FUERA AMBAS, DADO QUE ES USO DE LA HERRAMIENTA .
+% - YA ESTA EL CODIGO EN EL DOCUMENTO DE WORD, ¿CHECAR? = NO ESTA
+
+Las pruebas ejecutadas a la herramienta para visualización fueron de funcionalidad, las cuales se enfocaron en diferenciar principalmente la estructura utilizada, así como la dimensión del \textit{render} \cite{b17}.
+La Tabla \ref{tabla:2D/3D} y Tabla \ref{tabla:4Dy5D} presentan los datos de entrada para dichas pruebas. La Tabla \ref{tabla:2D/3D} lista los vectores utilizados para las dimensiones 2 y 3 (D2/D3). La Tabla \ref{tabla:4Dy5D} lista los vectores utilizados para la dimensión 4 y 5 (D4/D5).
+
+\begin{table}[htb]
+	\centering
+		\caption{Datos de entrada para la prueba de funcionalidad de las dimensiones 2 y 3 (2D/3D)}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\multicolumn{5}{|c|}{Datos para las $\mathbb{Z}$-bases propuestas} \\
+		\hline
+		& Vectores & 1D (u) & 2D (u) & 3D (u) \\
+		\hline
+		Ret\'icula degenerada & $v_1$ & 0.2 & 2.1 & - \\
+		\hline
+		\multirow{2}*{Ret\'icula no degenerada} & $v_1$ & 12 & 3 & - \\ \cline{2-5}
+		& $v_2$ & 4 & 7 & - \\ \cline{1-5}
+		Ret\'icula 1-degenerada & $v_1$ & 2.3 & 1.66 & 5.4 \\ \cline{1-5}
+		\multirow{2}*{Ret\'icula 2-degenerada} & $v_1$ & 0.5 & 1 & 2.3 \\ \cline{2-5}
+		& $v_2$ & 0 & 3 & 1 \\ \cline{1-5}
+		\multirow{3}*{Ret\'icula 3-degenerada} & $v_1$ & 13 & 2 & 5 \\ \cline{2-5}
+		& $v_2$ & 12 & 5 & 6 \\ \cline{2-5}
+		& $v_3$ & 10 & 3 & 7 \\ \cline{1-5}
+		\hline
+		\multicolumn{5}{|c|}{Datos para el dominio fundamental} \\
+		\hline
+		& Vectores & 1D (u) & 2D (u) & 3D (u) \\
+		\hline
+		\multirow{2}*{Ret\'icula no degenerada bidimensional} & $v_1$ & 0.4 & 1 & - \\ \cline{2-5}
+		& $v_2$ & 2.2 & 0.3 & - \\ \cline{1-5}
+		\multirow{3}*{Ret\'icula no degenerada tridimensional} & $v_1$ & 0.5 & 2 & 1 \\ \cline{2-5}
+		& $v_2$ & 1 & 3 & 0.4 \\ \cline{2-5}
+		& $v_3$ & 3 & 1 & 0.6 \\ \cline{1-5}
+		\hline
+		\multicolumn{5}{|c|}{Datos para el conjunto linealmente dependiente aplicado al LLL} \\
+		\hline
+		& Vectores & 1D (u) & 2D (u) & 3D (u)\\
+		\hline
+		\multirow{2}*{Ret\'icula no degenerada bidimensional} & $v_1$ & 1 & 1 & - \\ \cline{2-5}
+		& $v_2$ & 2 & 2 & - \\ \cline{1-5}
+		\multirow{3}*{Ret\'icula no degenerada tridimensional} & $v_1$ & 1 & 1 & 1 \\ \cline{2-5}
+		& $v_2$ & 2 & 3 & 4 \\ \cline{2-5}
+		& $v_3$ & 2 & 2 & 2 \\ \cline{1-5}
+	\end{tabular}
+	\label{tabla:2D/3D}
+\end{table}
+
+
+%Para la siguiente serie de pruebas es necesario contar con los requerimientos citados en \cite{b7} que principalmente hace la mayor importancia en cuanto a la estructura algebraica, en la primera parte del proyecto, el uso de numpy 1.16.4. Los siguientes datos son las $\mathbb{Z}$-bases propuestas.
+
+%\begin{table}
+%	\centering
+%	\begin{tabular}[c]{|c|c|c|c|c|}
+%		\hline
+%		& Vectores & 1D & 2D & 3D \\
+%		\hline
+%		Ret\'icula degenerada & V1 & 0.2 & 2.1 & - \\
+%		\hline
+%		\multirow{2}{5cm}{Ret\'icula no degenerada} & V1 & 12 & 3 & - \\ \cline{2-5}
+%		& V2 & 3 & 7 & - \\ \cline{1-5}
+%		Ret\'icula 1-degenerada & V1 & 2.3 & 1.66 & 5.4 \\ \cline{1-5}
+%		\multirow{2}{4cm}{Ret\'icula 2-degenerada} & V1 & 0.5 & 1 & 2.3 \\ \cline{2-5}
+%		& V2 & 0 & 3 & 1 \\ \cline{1-5}
+%		\multirow{3}{4cm}{Ret\'icula 3-degenerada} & V1 & 13 & 2 & 5 \\ \cline{2-5}
+%		& V2 & 12 & 5 & 6 \\ \cline{2-5}
+%		& V3 & 10 & 3 & 7 \\ \cline{1-5}
+%	\end{tabular}
+%	\caption{Prueba.}
+%	\label{tabla:prueba}
+%\end{table}
+
+%\begin{table}[htb]
+%	\centering
+%	\begin{tabular}{|c|c|c|c|c|}
+%		\hline
+%		& Vectores & 1D & 2D & 3D \\
+%		\hline
+%		\multirow{2}{4cm}{Ret\'icula no degenerada bidimensional} & V1 & 0.4 & 1 & \\ \cline{2-5}
+%		& V2 & 2.2 & 0.3 &  \\ \cline{1-5}
+%		\multirow{3}{4cm}{Ret\'icula no degenerada tridimensional} & V1 & 0.5 & 2 & 1 \\ \cline{2-5}
+%		& V2 & 1 & 3 & 0.4 \\ \cline{2-5}
+%		& V3 & 3 & 1 & 0.6 \\ \cline{1-5}
+%	\end{tabular}
+%	\caption{Dominio fundamental}
+%	\label{tabla:dominio}
+%\end{table}
+
+%\begin{table}[htb]
+%	\centering
+%	\begin{tabular}{|c|c|c|c|c|}
+%		\hline
+%		& Vectores & 1D & 2D & 3D \\
+%		\hline
+%		\multirow{2}{4cm}{Ret\'icula no degenerada bidimensional} & V1 & 1 & 1 & \\ \cline{2-5}
+%		& V2 & 2 & 2 &  \\ \cline{1-5}
+%		\multirow{3}{4cm}{Ret\'icula no degenerada tridimensional} & V1 & 1 & 1 & 1 \\ \cline{2-5}
+%		& V2 & 2 & 3 & 4 \\ \cline{2-5}
+%		& V3 & 2 & 2 & 2 \\ \cline{1-5}
+%	\end{tabular}
+%	\caption{Para un conjunto linealmente dependiente aplicado al LLL.}
+%	\label{tabla:lll}
+%\end{table}
+
+%	\subsection*{Dimensi\'on 2.}
+%	\begin{itemize}
+%		\item \textit{Ret\'icula degenerada}: $v_{1}$ = (0.2, 2.1).
+%		\item \textit{Ret\'icula no degenerada} : $v_{1}$ = (12, 3), $v_{2}$ = (4, 7).
+%	\end{itemize}
+%	\subsection*{Domensi\'on 3.}
+%	\begin{itemize}
+%		\item \textit{Ret\'icula 1-degenerada}: $v_1$ = (2.3, 1.66, 5.4).
+%		\item \textit{Ret\'icula 2-degenerada}: $v_1$ = (0.5, 1, 2.3), $v_2$ = (0, 3, 1). 
+%		\item \textit{Ret\'icula no degenerada}: $v_1$ = (13, 2, 5), $v_2$ = (12, 5, 6), $v_3$ %= (10, 3, 7).
+%	\end{itemize}
+%	\subsection*{Para el dominio fundamental.}
+%	\begin{itemize}
+%		\item \textit{Ret\'icula no degenerada bidimensional}: $v_{1}$ = (0.4, 1), $v_{2}$ = %(2.2, 0.3).
+%		\item \textit{Ret\'icula no degenerada tridimensional}: $v_{1}$ = (0.5, 2, 1), $v_{2}$ %= (1, 3, 0.4), $v_{3}$ = (3, 1, 0.6).
+%	\end{itemize}
+%	\subsection*{Para un conjunto linealmente dependiente aplicado al LLL.}
+%	\begin{itemize}
+%		\item \textit{Ret\'icula no degenerada en bidimensional}: $v_{1}$ = (1, 1), $v_{2}$ = %(2, 2).
+%		\item \textit{Ret\'icula no degenerada en tridimensional}: $v_{1}$ =(1, 1, 1), $v_{2}$ %= (2, 3, 4), $v_{3}$ = ( 2, 2, 2).
+%	\end{itemize}
+
+% PARRAFO QUE NO SIRVE PARA LAS PRUEBAS. Para la segunda parte se utilizaron nuevos m\'odulos en python3.7 los cuales tienen como objetivo el manejo de los tipos de datos racionales y su implementaci\'on con matrices para incorporarlas a la herramienta mediante OpenGL y el GUI, para ello se crearon los m\'odulos referenciados en la Figura \ref{Figura 4}.
+
+%	\subsection*{Dimensi\'on 4.}
+%	\begin{itemize}
+%		\item \textit{Ret\'icula no degenerada}:\\ $v_1$ = (1, 0, 0, 0), $v_2$ = (0, 2, 0, 0), %$v_3$ = (0, 0, 3, 0), $v_4$ = (0, 0, 0, 4).
+%	\end{itemize}
+%	\subsection*{Dimensi\'on 5.}
+%	\begin{itemize}
+%		\item \textit{Ret\'icula no degenerada}:\\ $v_1$ = (1/2, 0, 0, 0, 0), $v_2$ = (0, 1, 0, %0, 0), $v_3$ = (0, 0, 3/2, 0, 0),\\ $v_4$ = (0, 0, 0, 2, 0), 
+%		$v_5$ = (0, 0, 0, 0, 5/2)
+%	\end{itemize}
+
+\begin{table}
+	\centering
+		\caption{Datos de entrada para la prueba de funcionalidad de las dimensiones 4 y 5 (4D/5D)}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+	    \hline
+		\multicolumn{7}{|c|}{Datos para las $\mathbb{Z}$-bases propuestas} \\
+		\hline
+		& Vectores & 1D (u) & 2D (u) & 3D (u) & 4D (u) & 5D (u) \\
+		\hline
+		\multirow{4}{4cm}{Ret\'icula degenerada} & $v_1$ & 1 & 0 & 0 & 0 & - \\ \cline{2-7}
+		& $v_2$ & 0 & 2 & 0 & 0 & - \\ \cline{2-7}
+		& $v_3$ & 0 & 0 & 3 & 0 & - \\ \cline{2-7}
+		& $v_4$ & 0 & 0 & 0 & 4 & - \\ \cline{1-7}
+		\multirow{5}{4cm}{Ret\'icula no degenerada} & $v_1$ & 0.5 & 0 & 0 & 0 & 0 \\ \cline{2-7}
+		& $v_2$ & 0 & 1 & 0 & 0 & 0 \\ \cline{2-7}
+		& $v_3$ & 0 & 0 & 1.5 & 0 & 0\\ \cline{2-7}
+		& $v_4$ & 0 & 0 & 0 & 2 & 0\\ \cline{2-7}
+		& $v_5$ & 0 & 0 & 0 & 0 & 2.5\\ \cline{1-7}
+	\end{tabular}
+	\label{tabla:4Dy5D}
+\end{table}
+
+Los resultados obtenidos al ingresar los datos previamente listados, muestran la funcionalidad de la herramienta al momento de seleccionar, a través de la GUI, la opción referente a las dimensiones, ya sea 2D/3D o 4D/5D.\\
+
+\begin{figure}
+	\centering
+	\subfloat[Ret\'icula degenerada]{
+		\label{f:Bidimensional1}
+		\includegraphics[width=0.43\textwidth]{Pictures/Reticula00.png}}
+	\subfloat[Retícula no degenerada]{
+		\label{f:Bidimensional2}
+		\includegraphics[width=0.43\textwidth]{Pictures/Reticula003.png}}
+	\caption{Resultados obtenidos para las ret\'iculas en el espacio bidimensional}
+	\label{f:Bidimensional}
+\end{figure}
+
+%\section{Resultados}
+%La herramienta nos da resultados correctos haciendose valer de pruebas num\'ericas con numpy antes de introducir este m\'etodo de visualizaci\'on con tarugos y el algorimo LLL.
+
+Después del escalonamiento del vector base y de la inserción de puntos, en la Figura \ref{f:Bidimensional} se puede ver la animación resultante para la dimensión 2 (2D). La Figura \ref{f:Bidimensional1} se muestra la animación resultante del vector $\mathbb{Z}-$base $v_{1}$ = (0.2, 2.1). En ese mismo sentido, la correcta implementaci\'on de los \textit{tarugos} para la ret\'icula no degenerada, así como del algoritmo de reducci\'on \textit{LLL}, permitió obtener la animación de la Figura \ref{f:Bidimensional2}, resultado de la $\mathbb{Z}$-base formada por los vectores $v_{1}$ = (12, 3)  y $v_{2}$ = (4, 7).
+
+La Figura \ref{Tridimensional} presenta los resultados de la animación para las retículas en el espacio tridimensional. La Figura \ref{f:Tridimensional1} muestra el vector $\mathbb{Z}-$base es $v_1$ = (2.3, 1.66, 5.4). En la Figura \ref{f:Tridimensional2} se puede ver que su $\mathbb{Z}$-base est\'a formada por los vectores $v_1$ = (0.5, 1, 2.3), $v_2$ = (0, 3, 1). Finalmente, la animación de la Figura \ref{f:Tridimensional3} est\'a dada por los vectores  $v_1$ = (13, 2, 5), $v_2$ = (12, 5, 6), $v_3$ = (10, 3, 7). La obtención de las animaciones para la ret\'icula 1 degenerada y la ret\'icula 2 degenerada representan que la implementaci\'on de los \textit{tarugos} es funcional, además de la correcta ejecución del algoritmo de reducci\'on \textit{LLL} a la ret\'icula determinada por la $\mathbb{Z}$-base antes mencionada.
+
+\begin{figure}
+	\centering
+	\subfloat[Ret\'icula 1-degenerada]{
+		\label{f:Tridimensional1}
+		\includegraphics[width=0.4\textwidth]{Pictures/Reticula008.png}}
+	\subfloat[Retícula 2-degenerada]{
+		\label{f:Tridimensional2}
+		\includegraphics[width=0.4\textwidth]{Pictures/Reticula002.png}}\\
+	\subfloat[Ret\'icula no degenerada]{\label{f:Reticula02}
+	    \label{f:Tridimensional3}
+		\includegraphics[width=0.4\textwidth]{Pictures/Reticula004.png}}
+	\caption{Resultados obtenidos para las ret\'iculas en el espacio tridimensional}
+	\label{Tridimensional}
+\end{figure}
+
+La Figura \ref{Fundamental} muestra la animación obtenida para el dominio fundamental. La Figura \ref{f:Fundamental1} representa la animación resultante para el conjunto de vectores que forman parte de una $\mathbb{Z}-$base: $v_{1}$ = (0.4, 1), $v_{2}$ = (2.2, 0.3). Mientras que la Figura \ref{f:Fundamental2} muestra el resultado para la $\mathbb{Z}$-base que está formada por los vectores $v_{1}$ = (0.5, 2, 1), $v_{2}$ = (1, 3, 0.4), $v_{3}$ = (3, 1, 0.6). 
+
+\begin{figure}
+	\centering
+	\subfloat[Dominio Fundamental bidimensional]{
+		\label{f:Fundamental1}
+		\includegraphics[width=0.48\textwidth]{Pictures/Reticula005.png}}
+	\subfloat[Dominio Fundamental tridimensional]{
+		\label{f:Fundamental2}
+		\includegraphics[width=0.48\textwidth]{Pictures/Reticula006.png}}
+	\caption{Dominio Fundamental}
+	\label{Fundamental}
+\end{figure}
+
+Los resultados obtenidos para las dimensiones 4D/5D se muestran con la Figura \ref{Dimensiones 4D/5D}, las cuales tomaron como entradas, la $\mathbb{Z}$-base, introducida a través de la GUI como enteros o racionales. La Figura \ref{f:4D/5D1} muestra la animación resultante para la $\mathbb{Z}-$base determinada por: $v_1$ = (1, 0, 0, 0), $v_2$ = (0, 2, 0, 0), $v_3$ = (0, 0, 3, 0), $v_4$ = (0, 0, 0, 4). La Figura \ref{f:4D/5D2} muestra la animación resultante para la  $\mathbb{Z}$-base formada por los vectores: $v_1$ = (1/2, 0, 0, 0, 0), $v_2$ = (0, 1, 0, 0, 0), $v_3$ = (0, 0, 3/2, 0, 0), $v_4$ = (0, 0, 0, 2, 0), $v_5$ = (0, 0, 0, 0, 5/2).
+
+\begin{figure}
+	\centering
+	\subfloat[Ret\'icula tetradimensional]{
+		\label{f:4D/5D1}
+		\includegraphics[width=0.48\textwidth]{Pictures/Reticula009.png}}
+	\subfloat[Ret\'icula pentadimensional]{
+		\label{f:4D/5D2}
+		\includegraphics[width=0.48\textwidth]{Pictures/Retiucla010.png}}
+	\caption{Resultados obtenidos para las animaciones de retículas no degeneradas en dimensión 4D/5D}
+	\label{Dimensiones 4D/5D}
+\end{figure}
+
+%En la Figura 9 se observa que para el inciso a el conjunto de vectores linealmente dependiente formado por los vectores: $v_{1}$ = (1, 1), y $v_{2}$ = (2, 2). As\'i mismo para en inciso b se tiene un conjunto de vectores linealmente dependiente en el espacio tridimensional formado por: $v_{1}$ =(1, 1, 1), $v_{2}$ = (2, 3, 4), y $v_{3}$ = ( 2, 2, 2). 
+
+%\begin{figure}
+%	\centering
+%	\subfloat[Conjunto de vectores l.d. en $\mathbb{R}^{2}$]{
+%		\label{f:Ret01}
+%		\includegraphics[width=0.524\textwidth]{Pictures/LD02.png}}
+%	\subfloat[Conjunto de vectores l. d. en $\mathbb{R}^{3}$]{
+%		\label{f:Retic}
+%		\includegraphics[width=0.503\textwidth]{Pictures/LD03.png}}
+%	\caption{Para un conjunto linealmente dependiente aplicado al LLL}
+%\end{figure} 
+
+%% NO SE QUÉ PEDO CON ESTO ****** Se observa que en el caso de ingresar un conjunto linealente dependiente de vectores en el espacio bidimiensional o tridimensional y alicarle el algoritmo LLL arroja un requerimiento no funcional. Es decir, tenemos por parte del m\'odulo \textit{fractions.py} de la Figura 2, que forma parte de los módulos de la primera parte, que en el gestor de errores se tiene un \textit{ZeroDivisionError: division by zero}.\\ %% NO SE QUÉ PEDO CON ESTO ****** 
+
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=13cm]{Pictures/Art1.png}
+%	\caption{Reducci\'on de ret\'iculas por medio del algoritmo LLL en Wolfram.}
+%	\label{fig:my_label}
+%\end{figure}
+
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=10cm]{Pictures/compa2.png}
+%	\caption{Reducci\'on de ret\'iculas por medio del algoritmo LLL por medio de la implementaci\'on alojada dentro de la herramienta.}
+%	\label{fig:my_label}
+%\end{figure}
+\newpage
+\section{Discusi\'on}
+\label{Discusión}
+    En los resultados obtenidos se muestra que la implementaci\'on del argoritmo \textit{LLL} para reducir una ret\'icula en las dimensiones dos, tres, cuatro y cinco (2D, 3D, 4D y 5D) la correcta funcionalidad, siempre y cuando los vectores introducidos no sean linealmente dependientes. En caso contrario, se efectua una divisi\'on por cero dentro del algoritmo \textit{LLL} y se notifica con la excepción: \textit{try-except block}.\\
+Un parámetro importante a considerar dentro de los resultados es la implementaci\'on de la teor\'ia de los \textit{tarugos} para optimizar los recursos computacionales a la hora de crear el \textit{render}, ya que los resultados se observaron tanto en ret\'iculas degenerados como en no degeneradas. Esto dado que, entre m\'as densa sea la ret\'icula y mayor el n\'umero de elementos dentro del espacio de visualizaci\'on, la herramienta necesita m\'as tiempo para generar los \textit{animaciones}. Esto, dado que la animaci\'on considera m\'as elementos que mostrar en pantalla. Sin embargo, para las dimensiones 4D/5D se necesitó mucho mas tiempo para graficar correcamente el n\'umero de aristas y v\'ertices que se incrementaron notoriamente en comparación con las dimensiones 2D/3D. Esto se debe a que entre m\'as densa sea la ret\'icula, y mayor n\'umero de elementos dentro del espacio de visualizaci\'on, crece el tiempo de ejecución exponencialmente dentro a la herramienta, al terminar de animar, ya que debe animar m\'as objetos en pantalla. 
+%Ahora bien esto ha presentado un problema con la dimensi\'on cuatro y cinco, ya que para graficar correcamente el n\'umero de aristas y v\'ertices incrementa notoriamente a las dimensiones anteriores, esto implica que el tiempo para la representaci\'on final mucho mayor por lo que se opt\'o a representar una ret\'icula graficada en OpenGL con los v\'ertices de hipercubos y penteractos, respectivamente, con ello se resolvio el problema intr\'inseco del metor de animación manim. 
+La correcta funcionalidad de la herramienta de visualización aquí presentada, se puede observar en la Tabla \ref{tabla:Comparacion} en donde se presenta una comparación de los resultados obtenidos y \textit{Mathematica}, una de las herramientas revisadas en el estado del arte. 
+% por lo que se opt\'o a representar una ret\'icula graficada en OpenGL con los v\'ertices de hipercubos y penteractos, respectivamente, con ello se resolvi\'o el problema intr\'inseco del motor de animaci\'on Manim. La implementaci\'on de una GUI con el m\'odulo tinker ayuda a identificar las partes de la herramienta as\'i como las opciones del mismo.
+%Además, aún cuando Es necesario tener en cuenta la calidad de la imagen de la animaci\'on, teniendo como opciones baja, media y alta. Sin embargo, esto puede representar una problema con la 
+% Fue positiva la implementaci\'on del algoritmo LLL dentro de una ret\'icula de dimensin dos o tres. 
+% Se desarrol\'o un m\'etodo basado en tarugos para graficar el dominio fundametal de cada ret\'icula, esto simpificar\'a mucho pasar entre dimensiones sin ning\'un problema.
+%La implementaci\'on de la teor\'ia de tarugos para poder optimizar recursos a la hora de renderizar es en efecto, eficiente y, arroja resultados correctos tanto para ret\'iculas degenerados como no degeneradas. Para la implementaci\'on del algorimo \textit{LLL} dentro de una ret\'icula de dimensión dos y tres no hubo mayor dif\'icultad, siempre y cuando los vectores introducidos no fueran linealmente dependientes la herramienta funciona de manera adecuada.  De no ser as\'i arroja un requerimiento no funcional, ya que dentro del algoritmo LLL se efectuar\'ia una divisi\'on por cero y se notifica con un \textit{try-except block}. Aun no se implementa una manera adecuada de manejar los errores sin salirse de la interfaz como en el caso que se le inserte un conjunto linealmente dependiente de vectores.
+%Se desarrol\'o un m\'etodo basado en tarugos para graficar el dominio fundametal de cada ret\'icula, esto simpificar\'a mucho pasar entre dimensiones sin ning\'un problema. Finalmente a la hora de implementar el arloritmo \textit{LLL} para reducir una ret\'icula hasta las dimensiones en las que se ha trabajado no se ha encontrado ning\'un problema, se reitera, menos que el conjunto de vectores entrada sea linealmente dependiente se genera un error en la herramienta.
+%y su m\'etodo LatticeReduce contra la herramienta implementada para verificar que el algoritmo sea correcto, para lo cual las $\mathbb{Z}$-bases a reducir son las mismas  uitlizadas para generar el experimento para ret\'iculas no degeneradas tanto bidimensionales como tridimensionales. 
+
+\begin{table}
+	\centering
+		\caption{Comparación de resultados obtenidos}
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+	    \hline
+	%	\multicolumn{9}{|c|}{Comparaci\'on entre los datos probados en Wolfram y con la herramienta.} \\
+	%	\hline
+		& \multicolumn{4}{|c|}{Entradas} & \multicolumn{4}{|c|}{Salidas} \\
+		\hline
+		& Vectores & 1D (u)& 2D (u)& 3D (u)& Vectores & 1D (u)& 2D (u)& 3D (u)\\
+		\hline
+		\multirow{2}*{\textit{Mathematica} \cite{b6}} & $v_1$ & 12 & 3 & - & $v_1$ & 4 & 7 & - \\ \cline{2-9}
+		& $v_2$ & 4 & 7 & - & $v_2$ & 8 & -4 & - \\ \cline{1-9}
+		\multirow{2}*{Herramienta de visualización} & $v_1$ & 12 & 3 & - & $v_1$ & 4 & 7 & - \\ \cline{2-9}
+		& $v_2$ & 4 & 7 & - & $v_2$ & 8 & -4 & - \\ \cline{1-9}
+		\multirow{3}*{\textit{Mathematica} \cite{b6}} & $v_1$ & 13 & 2 & 5 & $v_1$ & -1 & 3 & 1 \\ \cline{2-9}
+		& $v_2$ & 12 & 5 & 6 & $v_2$ & -2 & -2 & 1 \\ \cline{2-9}
+		& $v_3$ & 10 & 3 & 7 & $v_3$ & 6 & -1 & 9 \\ \cline{1-9}
+		\multirow{3}*{Herramienta  de visualización} & $v_1$ & 13 & 2 & 5 & $v_1$ & -1 & 3 & 1 \\ \cline{2-9}
+		& $v_2$ & 12 & 5 & 6 & $v_2$ &-2 & -2 & 1 \\ \cline{2-9}
+		& $v_3$ & 10 & 3 & 7 & $v_3$ & 6 & -1 & 9 \\ \cline{1-9}
+	\end{tabular}
+
+	\label{tabla:Comparacion}
+\end{table}
+
+%Ahora bien, se extrae la pieza de c\'odigo que realiza la reducci\'on de la ret\'icula por medio del algoritmo LLL alojada dentro de la herramienta y arroja el siguiente resultado. 
+%Y en efecto coinciden ambos resultados vistos como vectores columna. 
+\newpage
+
+\section{Conclusiones y trabajo futuro}
+\label{Conclusiones} 
+La teor\'ia detr\'as de la criptograf\'ia basada en ret\'iculas es de ende matem\'atico e inspirado por el reino geom\'etrico, de ahí que surge la necesidad de visualizar su fundamento, quedando de gran utilidad una herramienta para la visualización de la criptografía basada en ret\'iculas. De ella, se puede destacar la animación obtenida con diferentes dimensiones, 2D, 3D, 4D y 5D, dado que permite mostrar el diseño de la primera herramienta de \textit{software} para graficación y animación de ret\'iculas de distintas dimensiones a través del uso de algoritmos de reducci\'on y de la teor\'ia de \textit{tarugos}. \\
+Esta herramienta ha explorado distintas dimensiones, de las cuales, las dimensiones cuatro y cinco (4D/5D), dado el crecimiento exponencialmente en el n\'umero de elementos, toma tiempo en generar la animación respectiva, siendo as\'i, el motor de animaci\'on el que podría verse como una desventaja.\\
+Como trabajo a futuro queda abierta la sugerencia de implementar el algoritmo \textit{LLL} en dimensi\'on cuatro y cinco de una manera visual y eficiente. Esto, cambiando a un lenguaje compilado en lugar de uno interpretado, como el que se utiliza en este trabajo, de forma tal que sea posible optimizar el tiempo de \textit{renderizaci\'on}. \\
+%Como comentario final, esta pieza de software tiene como objetivo ilustrar a todo aquel que estudia criptograf\'ia post-cu\'antica cual es el problema matem\'atico de fondo, entender de qu\'e forma es totalmente diferente a cualquier  otro dentro de la criptograf\'ia cl\'asica. 
+
+\begin{thebibliography}{8}
+    \bibitem{b0} Peter W. Shor. "Algorithms for quantum computation: discrete logarithms and factoring". 1994. Proceedings 35th Annual Symposium on Foundations of Computer Science.
+    \bibitem{b1}Jeffrey Hoffstein, Jill Pipher and Joseph H. Silverman. "NTRU: A new high-speed public key cryptosystem". 1996. Manuscript circulated at CRYPTO 1996 rump session.
+	\bibitem{b2}Joe P. Buhler and Peter Stevenhagen. "Algorithmic number theory. Lattices, number fields, curves and cryptography". 2008. Cambrige University Press.
+	\bibitem{b3} Yuanmi Chen and Phong Q. Nguyen. "BKZ 2.0: Better Lattice Security Estimates". 2011. International Conference on the Theory and Application of Cryptology and Information Security.
+	\bibitem{b4}Microsoft. "Microsoft cryptographic technologies". 2018. \url{https://docs.microsoft.com/en-us/windows/win32/seccrypto/cryptography-tools}.
+	\bibitem{b5}Waterloo Maple Inc. "Maplesoft". 2019. \\ \url{https://www.maplesoft.com/applications/view.aspx?SID=4498}.
+	\bibitem{b6} Wolfram Research Inc. "\textit{Mathematica}". 2020. \url{https://www.wolfram.com/?source=nav}.
+	\bibitem{b7}Henri Cohen. "PARI/GP". 2018. \url{https://pari.math.u-bordeaux.fr/}
+	\bibitem{b8}University of Sydney. "Magma Computational Algebra System". 2010. \url{http://magma.maths.usyd.edu.au/magma/}.
+	\bibitem{b9} Bernhard Esslinger, Arno Wacker and Nils Kopal. "CrypTool 2". 2018. \url{https://www.cryptool.org/de/cryptool2}.
+	\bibitem{b10}Carl Ludwing Siegel. "Lectures on the geometry of numbers". 1989. Springer-Verlag, Berlin.
+	\bibitem{b11}Jeffrey Hoffstein, Jill Pipher and Jose Silverman . "An Introduction to Mathematical Cryptography". 2018. Springer.
+	\bibitem{b12}Denis Simon. "Selected applications of LLL in number theory". 2009. Information Security and Cryptography.
+	\bibitem{b13}Arjen K. Lenstra, H. W. Lenstra and L\'azl\'o Lov\'asz. "Factoring polynomials with rational coefficients". 1982. Mathematische Annalen 513-534.
+	\bibitem{b14}Daniel J. Bernstein, Johannes Buchmann and Erik Dahmén. "Post-quantum cryptography". 2009. Berlin: Springer.
+	\bibitem{b15}Barry Boehm and Wilfred J. Hansen. "Spiral Development: Experience, Principles and Refinements". 2000. Carnegie Mellon University.
+	\bibitem{b16} Grant Sanderson. "3blue1brown". 2019. \url{https://github.com/3b2b/manim}.
+	\bibitem{b17}Robert Bartle Gardner. "The Elements of Real Analysis". 1976. Wiley and Sons.
+
+	
+\end{thebibliography}
+
+\end{document}
